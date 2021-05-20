@@ -18,9 +18,9 @@ app.use(cors());
 // Routes middleware
 app.use('/user', userRoutes);
 
-// Catch all routes
-app.get('*', (req, res) => {
-	res.json({ message: 'Welcome to Afya Health Care EMR!' });
+// Catch / routes
+app.get('/', (req, res) => {
+	res.json({ message: 'Welcome to Afya Health Care EMR api endpoint!' });
 });
 // Connect to MongoDB
 mongoose

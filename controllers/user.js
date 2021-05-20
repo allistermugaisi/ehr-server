@@ -1,7 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+// import dotenv from 'dotenv';
 
 import User from '../models/Users.js';
+
+// if (process.env.NODE_ENV !== 'production') {
+// 	dotenv.config();
+// }
 
 export const signin = async (req, res) => {
 	const { email, password } = req.body;
@@ -15,7 +20,7 @@ export const signin = async (req, res) => {
 
 		// Simple validation
 		if (!email || !password)
-			res.status(400).json({ message: 'Please enter all fields!' });
+			return res.status(400).json({ message: 'Please enter all fields!' });
 
 		const isPasswordCorrect = await bcrypt.compare(
 			password,
@@ -29,12 +34,13 @@ export const signin = async (req, res) => {
 		// Authenticate user
 		const token = jwt.sign(
 			{ email: existingUser.email, id: existingUser._id },
-			JWT_SECRET,
+			process.env.JWT_SECRET,
 			{ expiresIn: '7 days' }
 		);
 
-		res.status(200).json({ result: existingUser, token });
+		res.status(200).json({ current_user: existingUser.name, token });
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({ message: 'Something went wrong.' });
 	}
 };
@@ -51,30 +57,33 @@ export const signup = async (req, res) => {
 
 		// Simple validation
 		if (!email || !password || !confirm_password || !firstName || !lastName)
-			res.status(400).json({ message: 'Please enter all fields!' });
+			return res.status(400).json({ message: 'Please enter all fields!' });
 
 		// Check password strength
-		if (password.length < 6)
-			res
+		if (password.length < 8)
+			return res
 				.status(400)
-				.json({ message: 'Password should be atleast 6 characters.' });
+				.json({ message: 'Password should be atleast 8 characters.' });
 
 		// Compare passwords
 		if (password !== confirm_password)
-			res.status(400).json({ message: 'Passwords do not match!' });
+			return res.status(400).json({ message: 'Passwords do not match!' });
 
 		// Hash user password
 		const hashedPassword = await bcrypt.hash(password, 12);
+		const hashedConfirmPassword = await bcrypt.hash(confirm_password, 12);
 
 		// Create user
 		await User.create({
 			email,
 			password: hashedPassword,
+			confirm_password: hashedConfirmPassword,
 			name: `${firstName} ${lastName}`,
 		});
 
 		res.status(200).json({ message: 'New user created!' });
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({ message: 'Something went wrong.' });
 	}
 };
