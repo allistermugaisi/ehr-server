@@ -1,12 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-// import dotenv from 'dotenv';
 
 import User from '../models/Users.js';
-
-// if (process.env.NODE_ENV !== 'production') {
-// 	dotenv.config();
-// }
 
 export const signin = async (req, res) => {
 	const { email, password } = req.body;
@@ -71,13 +66,11 @@ export const signup = async (req, res) => {
 
 		// Hash user password
 		const hashedPassword = await bcrypt.hash(password, 12);
-		const hashedConfirmPassword = await bcrypt.hash(confirm_password, 12);
 
 		// Create user
 		await User.create({
 			email,
 			password: hashedPassword,
-			confirm_password: hashedConfirmPassword,
 			name: `${firstName} ${lastName}`,
 		});
 
