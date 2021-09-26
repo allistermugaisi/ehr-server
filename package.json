@@ -1,14 +1,14 @@
 {
-	"name": "emr-server",
+	"name": "ehr-server",
 	"version": "0.1.0",
-	"description": "Server logic for Afya Services LLC emr",
+	"description": "Server logic for AfyaEHR Health Care",
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
 		"start": "index.js",
 		"dev": "nodemon index.js"
 	},
-	"repository": "https://github.com/allistermugaisi/afya-services-emr-server.git",
+	"repository": "https://github.com/allistermugaisi/ehr-client.git",
 	"author": "Allister Mugaisi <allistermugaisi@gmail.com>",
 	"license": "MIT",
 	"dependencies": {

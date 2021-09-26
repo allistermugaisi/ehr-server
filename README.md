@@ -1,3 +1,3 @@
-# afya-healthcare-emr-server
+# AfyaEHR Health Care
 
-This project holds the server logic for Afya Services EMR (Electronic Health Records).
+This project holds the server logic for AfyaEHR Health Care. (Electronic Health Records)

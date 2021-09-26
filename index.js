@@ -20,11 +20,11 @@ app.use('/user', userRoutes);
 
 // Catch / routes
 app.get('/', (req, res) => {
-	res.json({ message: 'Welcome to Afya Health Care EMR api endpoint!' });
+	res.json({ message: 'Welcome to AfyaEHR Health Care api endpoint!' });
 });
 // Connect to MongoDB
 mongoose
-	.connect(process.env.MONGO_CONNECT, {
+	.connect(process.env.MONGO_URI, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 		useCreateIndex: true,
