@@ -1,9 +1,10 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 
 import userRoutes from './routes/users.js';
+import mailRoute from './middleware/mail.js';
 
 const app = express();
 
@@ -16,16 +17,19 @@ app.use(express.urlencoded({ limit: '30mb', extended: true })); // parse URL-enc
 app.use(cors());
 
 // Routes middleware
-app.use('/user', userRoutes);
+app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/communicate', mailRoute);
 
 // Catch / routes
 app.get('/', (req, res) => {
 	res.json({ message: 'Welcome to AfyaEHR Health Care api endpoint!' });
 });
+
 // Connect to MongoDB
 mongoose
 	.connect(process.env.MONGO_URI, {
 		useNewUrlParser: true,
+		useFindAndModify: true,
 		useUnifiedTopology: true,
 		useCreateIndex: true,
 	})
