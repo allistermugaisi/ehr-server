@@ -1,9 +1,11 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
-import User from '../models/Users.js';
+import fs from 'fs';
 import mailgun from 'mailgun-js';
 import dotenv from 'dotenv';
+
+import User from '../models/Users.js';
+import { sendSMS, verifySMS } from '../controllers/sms.js';
 
 if (process.env.NODE_ENV !== 'production') {
 	dotenv.config();
@@ -44,6 +46,12 @@ export const signin = async (req, res) => {
 			{ expiresIn: '7 days' }
 		);
 
+		const welcomeMessage = 'Your AfyaEHR verification code';
+		const phone = +254790516067;
+		const sms = 'sms';
+
+		sendSMS(phone, welcomeMessage, sms);
+
 		res.status(200).json({ current_user: existingUser.name, token });
 	} catch (error) {
 		console.log(error);
@@ -76,7 +84,10 @@ export const signup = async (req, res) => {
 			return res.status(400).json({ message: 'Passwords do not match!' });
 
 		// Hash user password
-		const hashedPassword = await bcrypt.hash(password, 12);
+		const hashedPassword = await bcrypt.hash(
+			password,
+			parseInt(process.env.SALT_ROUNDS)
+		);
 
 		let name = `${firstName} ${lastName}`;
 
@@ -85,6 +96,8 @@ export const signup = async (req, res) => {
 			process.env.JWT_ACC_ACTIVATION,
 			{ expiresIn: '20m' }
 		);
+
+		// let emailBody = fs.readFileSync('your html file path').toString();
 
 		const data = {
 			from: 'AfyaEHR <allister@ehr.afyaservices.us>',
@@ -138,5 +151,22 @@ export const accountActivate = async (req, res) => {
 		);
 	} else {
 		return res.status(500).json({ error: 'Something went wrong.' });
+	}
+};
+
+export const verifyCode = async (req, res) => {
+	console.log(req.body);
+	if (req.body.phonenumber && req.body.code.length === 6) {
+		const message = 'User is Verified!';
+		const phone = req.body.phonenumber;
+		const code = req.body.code;
+
+		await verifySMS(phone, message, code);
+	} else {
+		res.status(400).json({
+			message: 'Wrong phone number or code :(',
+			phonenumber: req.body.phonenumber,
+			data,
+		});
 	}
 };

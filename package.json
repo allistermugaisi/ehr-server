@@ -20,6 +20,7 @@
 		"mailgun-js": "^0.22.0",
 		"mongoose": "^5.12.7",
 		"stripe": "^8.148.0",
+		"twilio": "^3.68.0",
 		"uuid": "^8.3.2"
 	},
 	"devDependencies": {
