@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+const Schema = mongoose.Schema;
 
-const userSchema = mongoose.Schema(
+const userSchema = Schema(
 	{
 		name: {
 			type: String,
@@ -13,11 +14,56 @@ const userSchema = mongoose.Schema(
 			unique: 1,
 			required: true,
 		},
+		phone: {
+			type: Number,
+			maxlength: 15,
+			required: true,
+			default: 0,
+		},
+		countryCode: {
+			type: Number,
+			default: 1,
+		},
 		password: {
 			type: String,
 			minlength: 8,
 			required: true,
 		},
+		image: String,
+		role: {
+			type: Number,
+			default: 0,
+		},
+		token: {
+			type: String,
+		},
+		tokenExp: {
+			type: Number,
+		},
+		isActive: {
+			type: Boolean,
+			default: false,
+		},
+		profileCompleted: {
+			type: Boolean,
+			default: false,
+		},
+		accountOTP: {
+			type: String,
+			default: '',
+		},
+		providers: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: 'Provider',
+			},
+		],
+		patients: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: 'Patient',
+			},
+		],
 	},
 	{ timestamps: true }
 );
