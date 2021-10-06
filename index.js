@@ -5,7 +5,8 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import { v4 as uuidv4 } from 'uuid';
 
-import userRoutes from './routes/users.js';
+import authRoutes from './routes/users.js';
+import providerRoutes from './routes/providers.js';
 import mailRoute from './middleware/mail.js';
 
 const app = express();
@@ -13,6 +14,17 @@ const app = express();
 if (process.env.NODE_ENV !== 'production') {
 	dotenv.config();
 }
+
+// Connect to MongoDB
+mongoose
+	.connect(process.env.MONGO_URI, {
+		useNewUrlParser: true,
+		useFindAndModify: true,
+		useUnifiedTopology: true,
+		useCreateIndex: true,
+	})
+	.then(() => console.log('MongoDB connected successfully!'))
+	.catch((error) => console.log(error.message));
 
 app.use(express.json()); // used to parse JSON bodies
 app.use(express.urlencoded({ limit: '30mb', extended: true })); // parse URL-encoded bodies
@@ -30,7 +42,8 @@ app.use(
 );
 
 // Routes middleware
-app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/provider', providerRoutes);
 app.use('/api/v1/communicate', mailRoute);
 
 // Catch / routes
@@ -42,17 +55,6 @@ function assignId(req, res, next) {
 	req.id = uuidv4();
 	next();
 }
-
-// Connect to MongoDB
-mongoose
-	.connect(process.env.MONGO_URI, {
-		useNewUrlParser: true,
-		useFindAndModify: true,
-		useUnifiedTopology: true,
-		useCreateIndex: true,
-	})
-	.then(() => console.log('MongoDB connected successfully!'))
-	.catch((error) => console.log(error.message));
 
 const PORT = process.env.PORT || 5000;
 

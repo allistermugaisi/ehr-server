@@ -52,6 +52,10 @@ const userSchema = Schema(
 			type: String,
 			default: '',
 		},
+		resetLink: {
+			data: String,
+			default: '',
+		},
 		providers: [
 			{
 				type: Schema.Types.ObjectId,

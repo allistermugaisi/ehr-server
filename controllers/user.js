@@ -1,20 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import fs from 'fs';
-import mailgun from 'mailgun-js';
-import dotenv from 'dotenv';
 
 import User from '../models/Users.js';
 import { sendSMS, verifySMS } from '../controllers/sms.js';
-
-if (process.env.NODE_ENV !== 'production') {
-	dotenv.config();
-}
-
-const mg = mailgun({
-	apiKey: process.env.MAILGUN_API_KEY,
-	domain: process.env.DOMAIN,
-});
+import sendMail from './mail.js';
 
 export const signin = async (req, res) => {
 	const { email, password } = req.body;
@@ -97,37 +86,24 @@ export const signup = async (req, res) => {
 			{ expiresIn: '20m' }
 		);
 
-		// let emailBody = fs.readFileSync('your html file path').toString();
-
-		const data = {
+		const message = {
 			from: 'AfyaEHR <allister@ehr.afyaservices.us>',
 			to: email,
 			subject: 'Account Activation Link',
-			html: `
-			<h2>Please click on the given link to activate your account</h2><br/>
-			<a href='${process.env.CLIENT_URL}/authentication/activate/${token}'>${process.env.CLIENT_URL}/authentication/activate/${token}</a>
-			`,
+			html: '',
+			text: '',
+			attachment: '',
+			template: 'action',
 		};
 
-		await mg.messages().send(data, (error, body) => {
-			if (error) {
-				console.log('Mail error:', error);
-				return res.status(400).json({ error: error });
-			}
-			console.log(body);
-			return res.status(200).json({
-				message: 'Email has been sent, kindly activate your account.',
-			});
-		});
+		sendMail(message, token, res);
 	} catch (error) {
-		console.log(error);
-		res.status(500).json({ message: 'Something went wrong.' });
+		res.status(500).json({ message: error });
 	}
 };
 
 export const accountActivate = async (req, res) => {
 	const { token } = req.body;
-	console.log(token);
 	if (token) {
 		jwt.verify(
 			token,
@@ -169,4 +145,28 @@ export const verifyCode = async (req, res) => {
 			data,
 		});
 	}
+};
+
+export const forgotPassword = async (req, res) => {
+	const { email } = req.body;
+
+	const existingUser = await User.findOne({ email });
+
+	// Check existing user
+	if (!existingUser)
+		return res.status(403).json({ message: 'User does not exist exists!' });
+
+	const token = jwt.sign({ _id: user._id }, process.env.RESET_PASSWORD_KEY, {
+		expiresIn: '20m',
+	});
+
+	const message = {
+		from: 'AfyaEHR <allister@ehr.afyaservices.us>',
+		to: email,
+		subject: 'Account Activation Link',
+		html: '',
+		text: '',
+		attachment: '',
+		template: 'action',
+	};
 };

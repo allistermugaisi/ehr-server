@@ -10,14 +10,17 @@ const mg = mailgun({
 	domain: process.env.DOMAIN,
 });
 
-const sendMail = async (recipient, message, attachment) => {
+const sendMail = async (message, token, res) => {
+	const { from, to, subject, attachment, template, html, text } = message;
 	const data = {
-		from: 'AfyaEHR <allister@ehr.afyaservices.us>',
-		to: recipient,
-		subject: message.subject,
-		text: message.text,
+		from,
+		to,
+		subject,
+		text,
+		template,
 		inline: attachment,
-		html: message.html,
+		html,
+		'h:X-Mailgun-Variables': JSON.stringify({ token: `${token}` }),
 	};
 
 	await mg.messages().send(data, (error, body) => {
