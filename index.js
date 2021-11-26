@@ -48,7 +48,7 @@ app.use('/api/v1/communicate', mailRoute);
 
 // Catch / routes
 app.get('/', (req, res) => {
-	res.json({ message: 'Welcome to AfyaEHR Health Care api endpoint!' });
+	res.json({ message: 'Welcome to AfyaEHR Health Care api endpoint Today!' });
 });
 
 function assignId(req, res, next) {
