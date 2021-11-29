@@ -28,7 +28,7 @@ mongoose
 
 app.use(express.json()); // used to parse JSON bodies
 app.use(express.urlencoded({ limit: '30mb', extended: true })); // parse URL-encoded bodies
-app.use(cors());
+app.use(cors('*'));
 app.use(assignId);
 
 morgan.token('id', function getId(req) {
@@ -48,7 +48,7 @@ app.use('/api/v1/communicate', mailRoute);
 
 // Catch / routes
 app.get('/', (req, res) => {
-	res.json({ message: 'Welcome to AfyaEHR Health Care api endpoint Today!' });
+	res.json({ message: 'Welcome to AfyaEHR Health Care api endpoint!' });
 });
 
 function assignId(req, res, next) {

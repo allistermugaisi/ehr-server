@@ -35,11 +35,11 @@ export const signin = async (req, res) => {
 			{ expiresIn: '7 days' }
 		);
 
-		const welcomeMessage = 'Your AfyaEHR verification code';
-		const phone = +254790516067;
-		const sms = 'sms';
+		// const welcomeMessage = 'Your AfyaEHR verification code';
+		// const phone = +254790516067;
+		// const sms = 'sms';
 
-		sendSMS(phone, welcomeMessage, sms);
+		// sendSMS(phone, welcomeMessage, sms);
 
 		res.status(200).json({ current_user: existingUser.name, token });
 	} catch (error) {
@@ -119,6 +119,7 @@ export const accountActivate = async (req, res) => {
 				await User.create({
 					name,
 					email,
+					isEmailVerified: true,
 					password: hashedPassword,
 				});
 

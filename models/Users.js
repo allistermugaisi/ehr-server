@@ -40,7 +40,15 @@ const userSchema = Schema(
 		tokenExp: {
 			type: Number,
 		},
-		isActive: {
+		isUserActive: {
+			type: Boolean,
+			default: false,
+		},
+		isEmailVerified: {
+			type: Boolean,
+			default: false,
+		},
+		isPhoneVerified: {
 			type: Boolean,
 			default: false,
 		},
