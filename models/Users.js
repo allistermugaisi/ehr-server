@@ -8,6 +8,11 @@ const userSchema = Schema(
 			maxlength: 50,
 			required: true,
 		},
+		practice_name: {
+			type: String,
+			maxlength: 50,
+			required: true,
+		},
 		email: {
 			type: String,
 			trim: true,

@@ -49,17 +49,35 @@ export const signin = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
-	const { email, password, confirmPassword, firstName, lastName } = req.body;
+	const {
+		email,
+		password,
+		password_confirmation,
+		firstName,
+		lastName,
+		practice_name,
+	} = req.body;
 
 	try {
 		const existingUser = await User.findOne({ email });
+		const existingPractice = await User.findOne({ practice_name });
 
 		// Check existing user
 		if (existingUser)
 			return res.status(403).json({ message: 'User already exists!' });
 
+		// Check existing practice
+		if (existingPractice)
+			return res.status(403).json({ message: 'Practice already exists!' });
+
 		// Simple validation
-		if (!email || !password || !confirmPassword || !firstName || !lastName)
+		if (
+			!email ||
+			!password ||
+			!password_confirmation ||
+			!firstName ||
+			!lastName
+		)
 			return res.status(400).json({ message: 'Please enter all fields!' });
 
 		// Check password strength
@@ -69,7 +87,7 @@ export const signup = async (req, res) => {
 				.json({ message: 'Password should be atleast 8 characters.' });
 
 		// Compare passwords
-		if (password !== confirmPassword)
+		if (password !== password_confirmation)
 			return res.status(400).json({ message: 'Passwords do not match!' });
 
 		// Hash user password
