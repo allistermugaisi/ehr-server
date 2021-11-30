@@ -28,17 +28,7 @@ mongoose
 
 app.use(express.json()); // used to parse JSON bodies
 app.use(express.urlencoded({ limit: '30mb', extended: true })); // parse URL-encoded bodies
-app.use((req, res, next) => {
-	res.header('Access-Control-Allow-Origin', '*');
-	next();
-});
-
-// app.use(
-// 	cors({
-// 		origin: 'http://localhost:3000',
-// 		optionsSuccessStatus: 200, // For legacy browser support
-// 	})
-// );
+app.use(cors());
 app.use(assignId);
 
 morgan.token('id', function getId(req) {
