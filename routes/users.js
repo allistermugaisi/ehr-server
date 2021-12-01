@@ -7,9 +7,12 @@ import {
 	verifyCode,
 	forgotPassword,
 } from '../controllers/user.js';
+import { profile } from '../controllers/profile.js';
+import { auth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+router.get('/profile', auth, profile);
 router.post('/signin', signin);
 router.post('/signup', signup);
 router.post('/account/activate', accountActivate);

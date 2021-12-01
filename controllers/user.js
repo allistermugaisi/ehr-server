@@ -49,6 +49,7 @@ export const signin = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
+	console.log(req.body);
 	const { email, password, password_confirmation, name, phone, practice_name } =
 		req.body;
 
@@ -58,11 +59,11 @@ export const signup = async (req, res) => {
 
 		// Check existing user
 		if (existingUser)
-			return res.status(403).json({ message: 'User already exists!' });
+			return res.status(401).json({ message: 'User already exists!' });
 
 		// Check existing practice
 		if (existingPractice)
-			return res.status(403).json({ message: 'Practice already exists!' });
+			return res.status(401).json({ message: 'Practice already exists!' });
 
 		// Simple validation
 		if (
@@ -133,6 +134,7 @@ export const accountActivate = async (req, res) => {
 					practice_name,
 					email,
 					phone,
+					isUserActive: true,
 					isEmailVerified: true,
 					password: hashedPassword,
 				});
