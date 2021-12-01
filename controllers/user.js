@@ -92,23 +92,34 @@ export const signup = async (req, res) => {
 			parseInt(process.env.SALT_ROUNDS)
 		);
 
-		const token = jwt.sign(
-			{ name, email, hashedPassword, practice_name, phone },
-			process.env.JWT_ACC_ACTIVATION,
-			{ expiresIn: '20m' }
-		);
+		// Create user
+		await User.create({
+			name,
+			practice_name,
+			email,
+			phone,
+			isUserActive: true,
+			isEmailVerified: false,
+			password: hashedPassword,
+		});
 
-		const message = {
-			from: 'AfyaEHR <allister@ehr.afyaservices.us>',
-			to: email,
-			subject: 'Account Activation Link',
-			html: '',
-			text: '',
-			attachment: '',
-			template: 'action',
-		};
+		res.status(200).json({ message: 'New user created!' });
 
-		sendMail(message, token, res);
+		// const token = jwt.sign({ email }, process.env.JWT_ACC_ACTIVATION, {
+		// 	expiresIn: '20m',
+		// });
+
+		// const message = {
+		// 	from: 'AfyaEHR <allister@ehr.afyaservices.us>',
+		// 	to: email,
+		// 	subject: 'Verify Your Email Address',
+		// 	html: '',
+		// 	text: '',
+		// 	attachment: '',
+		// 	template: 'action',
+		// };
+
+		// sendMail(message, token, res);
 	} catch (error) {
 		res.status(500).json({ message: error });
 	}
@@ -125,21 +136,21 @@ export const accountActivate = async (req, res) => {
 					console.log(err);
 					return res.status(400).json({ error: 'Incorrect or expired token.' });
 				}
-				const { name, email, practice_name, phone, hashedPassword } =
-					decodedToken;
+				const { email } = decodedToken;
 
-				// Create user
-				await User.create({
-					name,
-					practice_name,
+				const existingUser = await User.findOne({ email });
+
+				// Check existing user
+				if (!existingUser)
+					return res.status(403).json({ message: 'User does not exist!' });
+
+				const verifiedUserEmail = await User.findOneAndUpdate(
 					email,
-					phone,
-					isUserActive: true,
-					isEmailVerified: true,
-					password: hashedPassword,
-				});
+					{ isEmailVerified: true },
+					{ new: true }
+				);
 
-				res.status(200).json({ message: 'New user created!' });
+				res.status(200).json(verifiedUserEmail);
 			}
 		);
 	} else {
