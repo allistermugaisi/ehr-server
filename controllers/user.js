@@ -49,14 +49,8 @@ export const signin = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
-	const {
-		email,
-		password,
-		password_confirmation,
-		firstName,
-		lastName,
-		practice_name,
-	} = req.body;
+	const { email, password, password_confirmation, name, phone, practice_name } =
+		req.body;
 
 	try {
 		const existingUser = await User.findOne({ email });
@@ -75,8 +69,9 @@ export const signup = async (req, res) => {
 			!email ||
 			!password ||
 			!password_confirmation ||
-			!firstName ||
-			!lastName
+			!practice_name ||
+			!phone ||
+			!name
 		)
 			return res.status(400).json({ message: 'Please enter all fields!' });
 
@@ -96,10 +91,8 @@ export const signup = async (req, res) => {
 			parseInt(process.env.SALT_ROUNDS)
 		);
 
-		let name = `${firstName} ${lastName}`;
-
 		const token = jwt.sign(
-			{ name, email, hashedPassword },
+			{ name, email, hashedPassword, practice_name, phone },
 			process.env.JWT_ACC_ACTIVATION,
 			{ expiresIn: '20m' }
 		);
@@ -131,12 +124,15 @@ export const accountActivate = async (req, res) => {
 					console.log(err);
 					return res.status(400).json({ error: 'Incorrect or expired token.' });
 				}
-				const { name, email, hashedPassword } = decodedToken;
+				const { name, email, practice_name, phone, hashedPassword } =
+					decodedToken;
 
 				// Create user
 				await User.create({
 					name,
+					practice_name,
 					email,
+					phone,
 					isEmailVerified: true,
 					password: hashedPassword,
 				});
